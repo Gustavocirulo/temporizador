@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+    <head>
+        <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=0.90">
+        <title>Temporizador</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="icon" type="image/svg" href="http://pluspng.com/img-png/clock-png-alarm-clock-png-512.png">
+    </head>
+
+    <body onload="timeController.temporizador()">
+
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-sm-auto">
+                        <div class="row justify-content-center border mx-2">
+                                <div class="col-auto">
+                                    <p id="relogioHoras" class="text-center" style="font-size: 3rem"></p>
+                                </div>
+                                <div class="col-auto">
+                                    <p class="text-center" style="font-size: 3rem">:</p>
+                                </div>
+                                <div class="col-auto">
+                                    <p id="relogioMinutos" class="text-center" style="font-size: 3rem"></p>
+                                </div>
+                                <div class="col-auto">
+                                    <p class="text-center" style="font-size: 3rem">:</p>
+                                </div>
+                                <div class="col-auto">
+                                    <p id="relogioSegundos" class="text-center" style="font-size: 3rem"></p>
+                                </div>
+                            </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-sm my-2">
+                    <button class="btn btn-outline-primary btn-lg btn-block" onclick="timeController.starTemporizador(this)" id="iniciaTempo">Iniciar/Continuar</button>
+                </div>
+                <div class="col-sm my-2">
+                    <button class="btn btn-outline-danger btn-lg btn-block" onclick="timeController.resetarTemporizador(this)" id="resetaTempo">Resetar</button>
+                </div>
+                <div class="col-sm my-2">
+                    <button class="btn btn-outline-warning btn-lg btn-block" onclick="timeController.pararTemporizador(this)" id="paraTempo">Parar</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            class Update {
+                constructor() {}
+
+                static formatar(horas, minutos, segundos, $) {
+                    const str_segundo = new String (segundos) 
+                    if (str_segundo.length == 1) 
+                        segundos = "0" + segundos;
+
+                    const str_minuto = new String (minutos) 
+                    if (str_minuto.length == 1) 
+                        minutos = "0" + minutos 
+
+                    const str_hora = new String (horas) 
+                    if (str_hora.length == 1) 
+                        horas = "0" + horas 
+
+                    return {horas: horas, minutos: minutos, segundos: segundos};
+
+                }
+            }
+
+            class TimeController {
+                constructor () {
+                    const $ = document.querySelector.bind(document);
+
+                    this._paragrafoHora = $('#relogioHoras');
+                    this._paragrafoMinutos = $('#relogioMinutos');
+                    this._paragrafoSegundos = $('#relogioSegundos');
+
+                    this._exibeConteudo = () => {
+                        const response = Update.formatar(this._horas, this._minutos, this._segundos);
+                        this._paragrafoHora.innerHTML = response.horas;
+                        this._paragrafoMinutos.innerHTML = response.minutos;
+                        this._paragrafoSegundos.innerHTML = response.segundos;
+                    };
+
+                    this._parar = false;
+                    this._start = false;
+                    this._horas = 0;
+                    this._minutos = 0;
+                    this._segundos = 0;
+                }
+
+                temporizador() {
+                    setTimeout(() => {
+                        if (this._start) {
+                            this.adicionaTempo();
+                        }
+                        if(this._parar) {
+                            // Do something
+                        }
+                        this._exibeConteudo(this);
+                        this.temporizador();    
+                    }, 1000);                                
+                }
+
+                adicionaTempo() {
+                        ++this._segundos;
+                        if (this._segundos === 60) {
+                            ++this._minutos;
+                            this._segundos = 0;
+                        }
+                        if (this._minutos === 60) {
+                            ++this._horas;
+                            this._minutos = 0;
+                        }
+                        if (this._horas === 24) {
+                            this._horas = 0;
+                        }
+                }
+
+                resetarTemporizador() {
+                    this._parar = true;
+                    this._start = false;
+                    this._horas = 0;
+                    this._minutos = 0;
+                    this._segundos = 0;
+                    this._exibeConteudo(this);
+                }
+                pararTemporizador() {
+                    this._parar = true;
+                    this._start = false;
+                    this._exibeConteudo(this);
+                }
+
+                starTemporizador() {
+                    this._parar = false;
+                    this._start = true;
+
+                }
+            }
+
+            let timeController = new TimeController();
+            
+            </script>
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    </body>
+
+</html>
